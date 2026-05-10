@@ -114,9 +114,11 @@ private struct AddCustomLocationView: View {
                 TextField("Location name", text: $name)
             }
 
-            Section("Sub-locations") {
+            Section {
                 TextField("Comma-separated (optional)", text: $subLocationsRaw, axis: .vertical)
                     .lineLimit(3...6)
+            } header: {
+                Text("Sub-locations")
             } footer: {
                 Text("Example: Main Lobby, Restroom, Stairwell")
             }
