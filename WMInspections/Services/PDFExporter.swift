@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import CoreText
 
 enum PDFExporter {
     private static let pageSize = CGSize(width: 612, height: 792)
@@ -7,7 +8,6 @@ enum PDFExporter {
     private static let titleFont = UIFont.systemFont(ofSize: 20, weight: .bold)
     private static let sectionFont = UIFont.systemFont(ofSize: 13, weight: .semibold)
     private static let bodyFont = UIFont.systemFont(ofSize: 12, weight: .regular)
-    private static let smallFont = UIFont.systemFont(ofSize: 10, weight: .regular)
 
     struct Attachment {
         let data: Data
@@ -18,7 +18,7 @@ enum PDFExporter {
     static func buildSinglePDF(record: InspectionRecord) -> Data {
         let format = UIGraphicsPDFRendererFormat()
         format.documentInfo = [
-            kCGPDFContextTitle as String: "W&M Inspection \(record.id.uuidString)",
+            kCGPDFContextTitle as String: "W&M Inspection – \(record.location)",
             kCGPDFContextCreator as String: "W&M Inspections iOS"
         ]
         let renderer = UIGraphicsPDFRenderer(
@@ -52,13 +52,23 @@ enum PDFExporter {
 
             cursor += 8
             cursor = drawSection("Notes", at: cursor, width: contentWidth)
-            cursor = drawWrappedText(record.notes.isEmpty ? "—" : record.notes, at: cursor, width: contentWidth, font: bodyFont, ctx: ctx, cursorReset: { cursor in cursor })
+            cursor = drawTextPaginated(
+                record.notes.isEmpty ? "—" : record.notes,
+                startingAt: cursor,
+                width: contentWidth,
+                font: bodyFont,
+                ctx: ctx
+            )
 
             for (index, filename) in record.photoFilenames.enumerated() {
                 guard let image = PhotoStorageService.loadFullImage(filename: filename) else { continue }
                 let caption = "Photo \(index + 1)"
-                let scaledHeight = image.size.height * (contentWidth / max(image.size.width, 1))
-                let needed = scaledHeight + 24
+                let maxHeight = pageSize.height - margin * 2 - 24
+                let aspectScale = contentWidth / max(image.size.width, 1)
+                let widthScaledHeight = image.size.height * aspectScale
+                let drawHeight = min(widthScaledHeight, maxHeight)
+                let drawWidth = drawHeight * (image.size.width / max(image.size.height, 1))
+                let needed = drawHeight + 24
 
                 if cursor + needed > pageSize.height - margin {
                     ctx.beginPage()
@@ -66,9 +76,14 @@ enum PDFExporter {
                 }
 
                 cursor = drawSection(caption, at: cursor, width: contentWidth)
-                let rect = CGRect(x: margin, y: cursor, width: contentWidth, height: scaledHeight)
+                let rect = CGRect(
+                    x: margin + (contentWidth - drawWidth) / 2,
+                    y: cursor,
+                    width: drawWidth,
+                    height: drawHeight
+                )
                 image.draw(in: rect)
-                cursor += scaledHeight + 12
+                cursor += drawHeight + 12
             }
         }
 
@@ -107,16 +122,22 @@ enum PDFExporter {
 
     static func pdfFilename(for record: InspectionRecord) -> String {
         let date = filenameDate(record.timestamp)
-        let loc = sanitize(record.location)
-        let sub = sanitize(record.subLocation ?? "general")
-        return "\(loc)-\(sub)_\(date).pdf"
+        let loc = sanitize(record.location, fallback: "inspection")
+        let sub = sanitize(record.subLocation ?? "general", fallback: "general")
+        let suffix = idSuffix(record.id)
+        return "\(loc)-\(sub)_\(date)_\(suffix).pdf"
     }
 
     static func photoFilename(for record: InspectionRecord, photoIndex: Int) -> String {
         let date = filenameDate(record.timestamp)
-        let loc = sanitize(record.location)
-        let sub = sanitize(record.subLocation ?? "general")
-        return "\(loc)-\(sub)_\(date)_photo\(photoIndex + 1).jpg"
+        let loc = sanitize(record.location, fallback: "inspection")
+        let sub = sanitize(record.subLocation ?? "general", fallback: "general")
+        let suffix = idSuffix(record.id)
+        return "\(loc)-\(sub)_\(date)_\(suffix)_photo\(photoIndex + 1).jpg"
+    }
+
+    private static func idSuffix(_ uuid: UUID) -> String {
+        String(uuid.uuidString.prefix(8))
     }
 
     private static func filenameDate(_ date: Date) -> String {
@@ -125,7 +146,7 @@ enum PDFExporter {
         return formatter.string(from: date)
     }
 
-    private static func sanitize(_ raw: String) -> String {
+    private static func sanitize(_ raw: String, fallback: String) -> String {
         let allowed = CharacterSet.alphanumerics
         let scalars = raw.unicodeScalars.map { allowed.contains($0) ? Character($0) : "-" }
         let collapsed = String(scalars).replacingOccurrences(
@@ -133,7 +154,8 @@ enum PDFExporter {
             with: "-",
             options: .regularExpression
         )
-        return collapsed.trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        let trimmed = collapsed.trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+        return trimmed.isEmpty ? fallback : trimmed
     }
 
     @discardableResult
@@ -170,27 +192,86 @@ enum PDFExporter {
         return y + 18
     }
 
-    private static func drawWrappedText(
+    private static func drawTextPaginated(
         _ text: String,
-        at y: CGFloat,
+        startingAt startY: CGFloat,
         width: CGFloat,
         font: UIFont,
-        ctx: UIGraphicsPDFRendererContext,
-        cursorReset: (CGFloat) -> CGFloat
+        ctx: UIGraphicsPDFRendererContext
     ) -> CGFloat {
+        guard !text.isEmpty else { return startY }
         let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: UIColor.black]
         let attributed = NSAttributedString(string: text, attributes: attrs)
-        let bounding = attributed.boundingRect(
-            with: CGSize(width: width, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading],
-            context: nil
-        )
-        var currentY = y
-        if currentY + bounding.height > pageSize.height - margin {
-            ctx.beginPage()
-            currentY = margin
+        let framesetter = CTFramesetterCreateWithAttributedString(attributed)
+        let totalLength = attributed.length
+
+        var charLocation = 0
+        var pageY = startY
+        let cgContext = ctx.cgContext
+        let minBlockHeight = font.lineHeight * 2
+
+        while charLocation < totalLength {
+            let availableHeight = (pageSize.height - margin) - pageY
+            if availableHeight < minBlockHeight {
+                ctx.beginPage()
+                pageY = margin
+                continue
+            }
+
+            let frameRect = CGRect(x: margin, y: pageY, width: width, height: availableHeight)
+            let flippedRect = CGRect(
+                x: frameRect.minX,
+                y: pageSize.height - frameRect.maxY,
+                width: frameRect.width,
+                height: frameRect.height
+            )
+            let path = CGPath(rect: flippedRect, transform: nil)
+            let frame = CTFramesetterCreateFrame(
+                framesetter,
+                CFRange(location: charLocation, length: 0),
+                path,
+                nil
+            )
+
+            cgContext.saveGState()
+            cgContext.textMatrix = .identity
+            cgContext.translateBy(x: 0, y: pageSize.height)
+            cgContext.scaleBy(x: 1, y: -1)
+            CTFrameDraw(frame, cgContext)
+            cgContext.restoreGState()
+
+            let visibleRange = CTFrameGetVisibleStringRange(frame)
+            guard visibleRange.length > 0 else { break }
+            charLocation += visibleRange.length
+
+            let consumedHeight = consumedHeight(in: frame, frameHeight: flippedRect.height)
+            pageY += consumedHeight + 8
+
+            if charLocation < totalLength {
+                ctx.beginPage()
+                pageY = margin
+            }
         }
-        attributed.draw(in: CGRect(x: margin, y: currentY, width: width, height: bounding.height))
-        return currentY + bounding.height + 8
+        return pageY
+    }
+
+    private static func consumedHeight(in frame: CTFrame, frameHeight: CGFloat) -> CGFloat {
+        let linesCF = CTFrameGetLines(frame)
+        let count = CFArrayGetCount(linesCF)
+        guard count > 0 else { return 0 }
+
+        var origins = [CGPoint](repeating: .zero, count: count)
+        CTFrameGetLineOrigins(frame, CFRange(location: 0, length: count), &origins)
+
+        guard let firstOrigin = origins.first, let lastOrigin = origins.last else { return 0 }
+        let lastLine = unsafeBitCast(CFArrayGetValueAtIndex(linesCF, count - 1), to: CTLine.self)
+        var ascent: CGFloat = 0
+        var descent: CGFloat = 0
+        var leading: CGFloat = 0
+        _ = CTLineGetTypographicBounds(lastLine, &ascent, &descent, &leading)
+
+        let topOfFirst = firstOrigin.y + ascent
+        let bottomOfLast = lastOrigin.y - descent
+        return max(0, topOfFirst - bottomOfLast)
     }
 }

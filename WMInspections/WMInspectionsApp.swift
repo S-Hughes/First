@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct WMInspectionsApp: App {
     let container: ModelContainer
-    @StateObject private var settings = AppSettings()
+    @State private var settings = AppSettings()
 
     init() {
         AppSettings.registerDefaults()
@@ -14,12 +14,13 @@ struct WMInspectionsApp: App {
             fatalError("Failed to create ModelContainer: \(error)")
         }
         CampusLocationLoader.seedIfNeeded(context: container.mainContext)
+        EmailComposer.sweepStaleTempExports()
     }
 
     var body: some Scene {
         WindowGroup {
             RootTabView()
-                .environmentObject(settings)
+                .environment(settings)
         }
         .modelContainer(container)
     }

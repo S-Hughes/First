@@ -13,6 +13,7 @@ struct InspectionEditorView: View {
     @State private var category: InspectionCategory = .other
     @State private var notes: String = ""
     @State private var photoFilenames: [String] = []
+    @State private var originalPhotoFilenames: [String] = []
 
     @State private var showingLocationPicker = false
     @State private var showingSubLocationPicker = false
@@ -108,7 +109,7 @@ struct InspectionEditorView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
+                Button("Cancel") { cancel() }
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") { save() }
@@ -144,20 +145,36 @@ struct InspectionEditorView: View {
     }
 
     private func load() {
-        guard let record else { return }
+        guard let record else {
+            originalPhotoFilenames = []
+            return
+        }
         location = record.location
         subLocation = record.subLocation ?? ""
         category = record.category
         notes = record.notes
         photoFilenames = record.photoFilenames
+        originalPhotoFilenames = record.photoFilenames
+    }
+
+    private func cancel() {
+        let originalSet = Set(originalPhotoFilenames)
+        let addedThisSession = photoFilenames.filter { !originalSet.contains($0) }
+        PhotoStorageService.deleteAll(filenames: addedThisSession)
+        dismiss()
     }
 
     private func save() {
         let trimmedSubLocation = subLocation.trimmingCharacters(in: .whitespaces)
         let resolvedSubLocation = trimmedSubLocation.isEmpty ? nil : trimmedSubLocation
+        let trimmedLocation = location.trimmingCharacters(in: .whitespaces)
+
+        let currentSet = Set(photoFilenames)
+        let removed = originalPhotoFilenames.filter { !currentSet.contains($0) }
+        PhotoStorageService.deleteAll(filenames: removed)
 
         if let record {
-            record.location = location
+            record.location = trimmedLocation
             record.subLocation = resolvedSubLocation
             record.category = category
             record.notes = notes
@@ -165,7 +182,7 @@ struct InspectionEditorView: View {
             record.touch()
         } else {
             let newRecord = InspectionRecord(
-                location: location,
+                location: trimmedLocation,
                 subLocation: resolvedSubLocation,
                 category: category,
                 notes: notes,

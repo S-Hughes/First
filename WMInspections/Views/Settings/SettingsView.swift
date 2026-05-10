@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject private var settings: AppSettings
+    @Environment(AppSettings.self) private var settings
 
     var body: some View {
+        @Bindable var settings = settings
         Form {
             Section("Email") {
                 TextField("Default \"To\" address", text: $settings.defaultEmail)

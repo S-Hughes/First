@@ -23,9 +23,13 @@ targets:
       - path: WMInspections
         excludes:
           - "Info.plist"
+          - "PrivacyInfo.xcprivacy"
+          - "Resources/**"
+          - "Assets.xcassets/**"
     resources:
       - path: WMInspections/Resources
       - path: WMInspections/Assets.xcassets
+      - path: WMInspections/PrivacyInfo.xcprivacy
     info:
       path: WMInspections/Info.plist
       properties:
@@ -43,8 +47,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         NSCameraUsageDescription: "W&M Inspections uses the camera to attach photos to inspection records taken during campus walks."
-        NSPhotoLibraryUsageDescription: "W&M Inspections lets you attach photos from your library to inspection records."
-        NSPhotoLibraryAddUsageDescription: "W&M Inspections may save inspection photos back to your library."
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: edu.wm.mbwa-inspections

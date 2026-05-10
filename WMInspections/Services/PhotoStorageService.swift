@@ -12,14 +12,26 @@ enum PhotoStorageService {
     }
 
     static func photosDirectory() -> URL {
-        let url = documentsDirectory().appendingPathComponent(photosFolderName, isDirectory: true)
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        return url
+        ensureDirectory(named: photosFolderName)
     }
 
     static func thumbnailsDirectory() -> URL {
-        let url = documentsDirectory().appendingPathComponent(thumbsFolderName, isDirectory: true)
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        ensureDirectory(named: thumbsFolderName)
+    }
+
+    private static func ensureDirectory(named name: String) -> URL {
+        var url = documentsDirectory().appendingPathComponent(name, isDirectory: true)
+        let fm = FileManager.default
+        if !fm.fileExists(atPath: url.path) {
+            try? fm.createDirectory(
+                at: url,
+                withIntermediateDirectories: true,
+                attributes: [.protectionKey: FileProtectionType.complete]
+            )
+            var resourceValues = URLResourceValues()
+            resourceValues.isExcludedFromBackup = true
+            try? url.setResourceValues(resourceValues)
+        }
         return url
     }
 
@@ -32,14 +44,14 @@ enum PhotoStorageService {
         guard let fullData = image.jpegData(compressionQuality: jpegQuality) else { return nil }
 
         do {
-            try fullData.write(to: fullURL, options: .atomic)
+            try fullData.write(to: fullURL, options: [.atomic, .completeFileProtection])
         } catch {
             return nil
         }
 
         let thumb = image.aspectFillThumbnail(size: thumbnailSize)
         if let thumbData = thumb.jpegData(compressionQuality: jpegQuality) {
-            try? thumbData.write(to: thumbURL, options: .atomic)
+            try? thumbData.write(to: thumbURL, options: [.atomic, .completeFileProtection])
         }
 
         return filename

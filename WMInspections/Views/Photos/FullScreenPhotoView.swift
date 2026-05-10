@@ -7,6 +7,9 @@ struct FullScreenPhotoView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
+    @State private var dragOffset: CGSize = .zero
+
+    private let dismissThreshold: CGFloat = 120
 
     var body: some View {
         NavigationStack {
@@ -17,7 +20,10 @@ struct FullScreenPhotoView: View {
                         .resizable()
                         .scaledToFit()
                         .scaleEffect(scale)
+                        .offset(dragOffset)
+                        .opacity(opacityForDrag)
                         .gesture(magnification)
+                        .simultaneousGesture(scale <= 1.01 ? swipeDownToDismiss : nil)
                         .gesture(doubleTap)
                 } else {
                     VStack(spacing: 12) {
@@ -49,13 +55,34 @@ struct FullScreenPhotoView: View {
         }
     }
 
+    private var opacityForDrag: Double {
+        let progress = min(abs(dragOffset.height) / 400, 1)
+        return 1.0 - progress * 0.6
+    }
+
     private var magnification: some Gesture {
-        MagnificationGesture()
+        MagnifyGesture()
             .onChanged { value in
-                scale = max(1.0, min(lastScale * value, 5.0))
+                scale = max(1.0, min(lastScale * value.magnification, 5.0))
             }
             .onEnded { _ in
                 lastScale = scale
+            }
+    }
+
+    private var swipeDownToDismiss: some Gesture {
+        DragGesture(minimumDistance: 10)
+            .onChanged { value in
+                if value.translation.height > 0 {
+                    dragOffset = CGSize(width: 0, height: value.translation.height)
+                }
+            }
+            .onEnded { value in
+                if value.translation.height > dismissThreshold {
+                    dismiss()
+                } else {
+                    withAnimation(.spring()) { dragOffset = .zero }
+                }
             }
     }
 

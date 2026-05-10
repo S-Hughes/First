@@ -43,9 +43,14 @@ enum CSVExporter {
     }
 
     private static func escape(_ field: String) -> String {
-        if field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r") {
-            return "\"\(field.replacingOccurrences(of: "\"", with: "\"\""))\""
+        let dangerous: Set<Character> = ["=", "+", "-", "@", "\t", "\r"]
+        var safe = field
+        if let first = safe.first, dangerous.contains(first) {
+            safe = "'" + safe
         }
-        return field
+        if safe.contains(",") || safe.contains("\"") || safe.contains("\n") || safe.contains("\r") {
+            return "\"\(safe.replacingOccurrences(of: "\"", with: "\"\""))\""
+        }
+        return safe
     }
 }

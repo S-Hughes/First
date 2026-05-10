@@ -5,7 +5,7 @@ struct ExportOptionsView: View {
     let records: [InspectionRecord]
     var onDismiss: () -> Void
 
-    @EnvironmentObject private var settings: AppSettings
+    @Environment(AppSettings.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     @State private var pendingExport: PendingExport?
