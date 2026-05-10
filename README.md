@@ -20,6 +20,14 @@ open WMInspections.xcodeproj
 
 Then choose an iOS 17+ simulator (or a connected device) and Run.
 
+## Continuous integration
+
+Every push to `main` or a `claude/*` branch (and every PR) runs
+`.github/workflows/build.yml` on `macos-latest`: install XcodeGen, regenerate
+the project, and run `xcodebuild build` for the iOS Simulator. No code
+signing required — the workflow only verifies that the project compiles.
+You can also trigger it manually from the Actions tab via "Run workflow".
+
 ## Project layout
 
 ```
