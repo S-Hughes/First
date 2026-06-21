@@ -1,0 +1,116 @@
+{
+  "groups": [
+    {
+      "name": "Historic Campus Core",
+      "locations": [
+        { "name": "Wren Building", "subLocations": ["Great Hall", "Chapel", "Classroom", "Main Lobby", "Hallway", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Brafferton", "subLocations": ["Main Lobby", "Hallway", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "President's House", "subLocations": ["Front Entrance", "Garden", "Exterior", "Service Entrance"] },
+        { "name": "Sunken Garden", "subLocations": ["Central Lawn", "Paths", "Benches", "Lighting", "Plantings"] },
+        { "name": "Old Campus", "subLocations": ["Walkways", "Trees", "Lighting", "Benches", "Trash Receptacles"] }
+      ]
+    },
+    {
+      "name": "Academic Buildings",
+      "locations": [
+        { "name": "Tyler Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Tucker Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Washington Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "McGlothlin-Street Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Small Hall", "subLocations": ["Main Lobby", "Hallway", "Lab", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Integrated Science Center (ISC)", "subLocations": ["Main Lobby", "Hallway", "Lab", "Classroom", "Office", "Restroom", "Stairwell", "Mechanical Room", "Loading Dock", "Exterior"] },
+        { "name": "Boswell Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Andrews Hall", "subLocations": ["Main Lobby", "Hallway", "Studio", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Morton Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Blair Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Ewell Hall", "subLocations": ["Main Lobby", "Hallway", "Studio", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "James Blair Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Rogers Hall", "subLocations": ["Main Lobby", "Hallway", "Lab", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Chancellors Hall", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "School of Education", "subLocations": ["Main Lobby", "Hallway", "Classroom", "Office", "Restroom", "Stairwell", "Mechanical Room", "Exterior"] }
+      ]
+    },
+    {
+      "name": "Libraries & Study Spaces",
+      "locations": [
+        { "name": "Swem Library", "subLocations": ["Main Floor", "Reading Room", "Group Study", "Stacks", "Restroom", "Cafe", "Botetourt Gallery", "Stairwell", "Exterior - Entrances"] },
+        { "name": "Law Library", "subLocations": ["Main Floor", "Reading Room", "Group Study", "Stacks", "Restroom", "Stairwell", "Exterior"] }
+      ]
+    },
+    {
+      "name": "Residence Halls",
+      "locations": [
+        { "name": "Barrett Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Bryan Complex", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Courtyard", "Exterior"] },
+        { "name": "Chandler Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Dupont Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Jefferson Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Lemon Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Hardy Hall", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Green & Gold Village (GGV)", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Courtyard", "Exterior"] },
+        { "name": "One Tribe Place", "subLocations": ["Main Lobby", "Hallway", "Common Room", "Laundry", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Ludwell Apartments", "subLocations": ["Apartment Building", "Common Room", "Laundry", "Walkways", "Parking", "Exterior"] },
+        { "name": "Graduate Complex", "subLocations": ["Apartment Building", "Common Room", "Laundry", "Walkways", "Parking", "Exterior"] }
+      ]
+    },
+    {
+      "name": "Dining",
+      "locations": [
+        { "name": "Sadler Center", "subLocations": ["Dining Hall", "Food Court", "Meeting Rooms", "Restroom", "Terrace", "Exterior - Entrances"] },
+        { "name": "Commons (Caf)", "subLocations": ["Dining Hall", "Kitchen Servery", "Restroom", "Exterior - Entrances"] },
+        { "name": "Marketplace", "subLocations": ["Dining Area", "Servery", "Restroom", "Exterior"] },
+        { "name": "Tribe Cafe", "subLocations": ["Cafe", "Seating", "Restroom"] },
+        { "name": "Starbucks (Sadler / Swem)", "subLocations": ["Cafe", "Seating", "Restroom"] }
+      ]
+    },
+    {
+      "name": "Athletic & Recreation",
+      "locations": [
+        { "name": "Kaplan Arena", "subLocations": ["Court", "Stands", "Concourse", "Locker Room", "Restroom", "Mechanical Room", "Exterior"] },
+        { "name": "Zable Stadium", "subLocations": ["Field", "Stands", "Press Box", "Locker Room", "Restroom", "Exterior"] },
+        { "name": "Busch Field", "subLocations": ["Field", "Stands", "Locker Room", "Restroom", "Exterior"] },
+        { "name": "Martin Family Stadium", "subLocations": ["Field", "Stands", "Locker Room", "Restroom", "Exterior"] },
+        { "name": "Rec Center (SRC)", "subLocations": ["Fitness Area", "Courts", "Pool", "Locker Room", "Restroom", "Lobby", "Mechanical Room", "Exterior"] },
+        { "name": "Plumeri Park", "subLocations": ["Field", "Dugouts", "Stands", "Restroom", "Exterior"] },
+        { "name": "Practice Fields", "subLocations": ["Field", "Lighting", "Fencing", "Trash Receptacles"] }
+      ]
+    },
+    {
+      "name": "Outdoor Spaces & Landmarks",
+      "locations": [
+        { "name": "Crim Dell & Bridge", "subLocations": ["Bridge", "Paths", "Water", "Lighting", "Plantings"] },
+        { "name": "Lake Matoaka", "subLocations": ["Shoreline", "Amphitheater", "Paths", "Boathouse", "Lighting"] },
+        { "name": "College Woods Trails", "subLocations": ["Trail", "Signage", "Bridges", "Trail Head"] },
+        { "name": "Alumni Memorial Garden", "subLocations": ["Lawn", "Plantings", "Lighting", "Benches", "Paths"] },
+        { "name": "Terrace (near Sadler)", "subLocations": ["Seating", "Lighting", "Plantings", "Paths"] },
+        { "name": "Old Campus Quad", "subLocations": ["Lawn", "Paths", "Lighting", "Trash Receptacles"] },
+        { "name": "New Campus Quad", "subLocations": ["Lawn", "Paths", "Lighting", "Trash Receptacles"] },
+        { "name": "Bike Paths & Sidewalks", "subLocations": ["Pavement", "Signage", "Lighting", "Bike Racks"] },
+        { "name": "Kaplan Parking Lot", "subLocations": ["Surface", "Striping", "Lighting", "Signage"] },
+        { "name": "Zable Parking Lot", "subLocations": ["Surface", "Striping", "Lighting", "Signage"] },
+        { "name": "School of Education Parking Lot", "subLocations": ["Surface", "Striping", "Lighting", "Signage"] },
+        { "name": "Parking Garages", "subLocations": ["Level", "Stairwell", "Elevator", "Lighting", "Pay Station", "Signage"] }
+      ]
+    },
+    {
+      "name": "Administrative & Support",
+      "locations": [
+        { "name": "Blow Memorial Hall", "subLocations": ["Main Lobby", "Hallway", "Office", "Restroom", "Stairwell", "Exterior"] },
+        { "name": "Admission Office", "subLocations": ["Reception", "Office", "Conference Room", "Restroom", "Exterior"] },
+        { "name": "University Advancement", "subLocations": ["Reception", "Office", "Conference Room", "Restroom", "Exterior"] },
+        { "name": "Facilities Management", "subLocations": ["Office", "Shop", "Yard", "Restroom", "Exterior"] },
+        { "name": "Campus Police Station", "subLocations": ["Reception", "Office", "Holding Area", "Restroom", "Exterior"] },
+        { "name": "Student Health Center", "subLocations": ["Reception", "Exam Room", "Pharmacy", "Restroom", "Exterior"] },
+        { "name": "Alumni House", "subLocations": ["Reception", "Office", "Event Room", "Restroom", "Exterior"] }
+      ]
+    },
+    {
+      "name": "Greek Houses & Off-Campus Properties",
+      "locations": [
+        { "name": "Fraternity Row", "subLocations": ["House Exterior", "Common Area", "Restroom", "Kitchen", "Grounds"] },
+        { "name": "Sorority Court", "subLocations": ["House Exterior", "Common Area", "Restroom", "Kitchen", "Grounds"] },
+        { "name": "Units A-D (Greek)", "subLocations": ["House Exterior", "Common Area", "Restroom", "Grounds"] }
+      ]
+    }
+  ]
+}
